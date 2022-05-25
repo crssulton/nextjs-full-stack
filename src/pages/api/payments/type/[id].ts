@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PropsDataRes, resError, resSuccess } from "../../../../utils/response";
-import data from "../../../../../__mocks__/payment-type";
+// import data from "../../../../../__mocks__/payment-type";
+import db from "../../../../libs/db";
 
 export default function handler(
   req: NextApiRequest,
@@ -25,35 +26,41 @@ const getData = async (
   req: NextApiRequest,
   res: NextApiResponse<PropsDataRes>
 ) => {
-  const {
-    query: { id },
-  } = req;
+  const { id } = req.query;
 
-  const result = data.find((o) => o.id === Number(id));
+  try {
+    const result = await db("tb_payments_type").where("id", "=", id).first();
 
-  if (!result) {
-    return resError({
+    if (!result) {
+      return resError({
+        res,
+        data: { message: "Data not found!" },
+        statusCode: 404,
+      });
+    }
+
+    return resSuccess({
       res,
-      data: { message: "Data not found!" },
-      statusCode: 404,
+      data: { result },
     });
+  } catch (error) {
+    console.log("error", error);
+    resError({ res, data: { message: "Get data error!" } });
   }
-
-  return resSuccess({
-    res,
-    data: { result },
-  });
 };
 
 const deleteData = async (
   req: NextApiRequest,
   res: NextApiResponse<PropsDataRes>
 ) => {
-  const {
-    query: { id },
-  } = req;
+  const { id } = req.query;
 
-  console.log("id", id);
+  try {
+    await db("tb_payments_type").where("id", "=", id).del();
 
-  return resSuccess({ res, data: { message: "Delete data success!" } });
+    return resSuccess({ res, data: { message: "Delete data success!" } });
+  } catch (error) {
+    console.log("error", error);
+    resError({ res, data: { message: "Delete data error!" } });
+  }
 };

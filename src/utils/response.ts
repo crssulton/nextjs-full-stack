@@ -3,6 +3,7 @@ import type { NextApiResponse } from "next";
 type PropsDataRes = {
   result?: any[] | object;
   message?: string;
+  count?: number
 };
 
 type Props = {

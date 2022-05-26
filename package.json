@@ -10,11 +10,19 @@
     "knex": "knex"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.8.1",
+    "antd": "^4.20.6",
+    "cogo-toast": "^4.2.3",
+    "formik": "^2.2.9",
     "knex": "^2.0.0",
     "mysql": "^2.18.1",
     "next": "12.1.6",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-confirm-alert": "^3.0.2",
+    "react-dom": "18.1.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/node": "17.0.35",

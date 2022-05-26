@@ -2,7 +2,7 @@ import cogoToast from "cogo-toast";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { confirmAlert } from "react-confirm-alert";
-import { AlertConfirm, InputText, TableInfoBeasiswa } from "../../components";
+import { AlertConfirm, InputText, TablePaymentType } from "../../components";
 import { API } from "../../utils";
 import { initialValues, validationSchema, formList } from "./helper";
 
@@ -10,7 +10,7 @@ const limit = 5;
 
 export const getServerSideProps = async () => {
   const res = await API({
-    path: `/api/info-beasiswa?limit=${limit}`,
+    path: `/api/payments/types?limit=${limit}`,
     method: "GET",
   });
 
@@ -24,7 +24,7 @@ type Props = {
   count: number;
 };
 
-const InfoBeasiswa = (props: Props) => {
+const Payment = (props: Props) => {
   const [data, setData] = useState(props.data);
   const [count, setCount] = useState(props.count);
   const [dataEdit, setDataEdit] = useState({});
@@ -35,7 +35,7 @@ const InfoBeasiswa = (props: Props) => {
       const { id }: any = dataEdit;
       const method = id ? "PUT" : "POST";
       const body = { ...value, id };
-      const res = await API({ path: "/api/info-beasiswa", method, body });
+      const res = await API({ path: "/api/payments/types", method, body });
 
       if (!res?.status) throw new Error(res?.message);
 
@@ -63,8 +63,9 @@ const InfoBeasiswa = (props: Props) => {
   });
 
   const setValue = (v: any) => {
-    formik.setFieldValue("title", v.title || "");
-    formik.setFieldValue("desc", v.desc || "");
+    formik.setFieldValue("name", v.name || "");
+    formik.setFieldValue("AccountNo", v.AccountNo || "");
+    formik.setFieldValue("accountName", v.accountName || "");
     formik.setFieldValue("img", v.img || null);
     setDataEdit(v);
   };
@@ -72,7 +73,7 @@ const InfoBeasiswa = (props: Props) => {
   const handleDelete = async (id: number) => {
     try {
       const res = await API({
-        path: `/api/info-beasiswa/${id}`,
+        path: `/api/payments/type/${id}`,
         method: "DELETE",
       });
 
@@ -97,7 +98,7 @@ const InfoBeasiswa = (props: Props) => {
     setPage(page);
     const newOffset = limit * (page - 1);
     const res = await API({
-      path: `/api/info-beasiswa?limit=${limit}&offset=${newOffset}`,
+      path: `/api/payments/types?limit=${limit}&offset=${newOffset}`,
       method: "GET",
     });
 
@@ -110,7 +111,7 @@ const InfoBeasiswa = (props: Props) => {
       <div className="row mt-2">
         <div className="col-8">
           <small>Total: {count} data</small>
-          <TableInfoBeasiswa
+          <TablePaymentType
             data={data}
             page={page}
             limit={limit}
@@ -138,7 +139,7 @@ const InfoBeasiswa = (props: Props) => {
             onSubmit={formik.handleSubmit}
           >
             <fieldset>
-              <legend>Form Info Beasiswa</legend>
+              <legend>Form Payment Type</legend>
               {formList.map((list, key) => (
                 <InputText
                   key={key}
@@ -180,4 +181,4 @@ const InfoBeasiswa = (props: Props) => {
   );
 };
 
-export default InfoBeasiswa;
+export default Payment;

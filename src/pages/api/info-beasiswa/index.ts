@@ -30,10 +30,18 @@ const getData = async (
   res: NextApiResponse<PropsDataRes>
 ) => {
   try {
-    const result = await db("tb_info_beasiswa").select();
-    return resSuccess({ res, data: { result } });
+    const { limit = 10, offset = 0 } = req.query;
+
+    const result = await db("tb_info_beasiswa")
+      .select()
+      .limit(Number(limit))
+      .offset(Number(offset));
+
+    const count = await db("tb_info_beasiswa").count("id as count");
+
+    return resSuccess({ res, data: { result, count: count?.[0]?.count } });
   } catch (error) {
-    console.log('error', error)
+    console.log("error", error);
     resError({ res, data: { message: "Get data error!" } });
   }
 };
@@ -53,7 +61,7 @@ const postData = async (
       data: { message: "Create data success!", result },
     });
   } catch (error) {
-    console.log('error', error)
+    console.log("error", error);
     resError({ res, data: { message: "Create data error!" } });
   }
 };
@@ -70,7 +78,7 @@ const putData = async (
 
     return resSuccess({ res, data: { message: "Edit data success!", result } });
   } catch (error) {
-    console.log('error', error)
+    console.log("error", error);
     resError({ res, data: { message: "Edit data error!" } });
   }
 };

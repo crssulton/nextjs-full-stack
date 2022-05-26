@@ -34,7 +34,7 @@ const getData = async (
     if (!result) {
       return resError({
         res,
-        data: { message: "Data not found!" },
+        data: { message: "Data not found!", result: {} },
         statusCode: 404,
       });
     }
@@ -45,7 +45,7 @@ const getData = async (
     });
   } catch (error) {
     console.log("error", error);
-    resError({ res, data: { message: "Get data error!" } });
+    resError({ res, data: { message: "Get data error!", result: {} } });
   }
 };
 

@@ -30,8 +30,16 @@ const getData = async (
   res: NextApiResponse<PropsDataRes>
 ) => {
   try {
-    const result = await db("tb_ielts_material").select();
-    return resSuccess({ res, data: { result } });
+    const { limit = 10, offset = 0 } = req.query;
+
+    const result = await db("tb_ielts_material")
+      .select()
+      .limit(Number(limit))
+      .offset(Number(offset));
+
+    const count = await db("tb_ielts_material").count("id as count");
+
+    return resSuccess({ res, data: { result, count: count?.[0]?.count } });
   } catch (error) {
     console.log("error", error);
     resError({ res, data: { message: "Get data error!" } });

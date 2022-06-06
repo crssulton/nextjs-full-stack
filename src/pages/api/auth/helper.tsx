@@ -8,7 +8,7 @@ export const createAccessToken = async (user: any) => {
     sub: user.id,
   };
 
-  return jwt.sign(payload, process.env.NEXT_PUBLIC_JWT_SECRET || "", {
+  return jwt.sign(payload, process.env.JWT_SECRET || "", {
     expiresIn: 60 * 60,
   });
 };
@@ -29,7 +29,7 @@ export const createRefreshToken = async (user: any) => {
     jid: jid[0],
   };
 
-  return jwt.sign(payload, process.env.NEXT_PUBLIC_JWT_SECRET || "", { expiresIn });
+  return jwt.sign(payload, process.env.JWT_SECRET || "", { expiresIn });
 };
 
 export const verifyAuth = async (req: NextApiRequest, res: NextApiResponse) => {

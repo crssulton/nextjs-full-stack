@@ -8,7 +8,7 @@ type AuthProps = {
 
 export const decodeToken = (token: string) => {
   try {
-    return jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET || "");
+    return jwt.verify(token, process.env.JWT_SECRET || "");
   } catch (error) {
     if (error instanceof TokenExpiredError) {
       throw new Error("Refresh token is expired");
@@ -19,8 +19,8 @@ export const decodeToken = (token: string) => {
 };
 
 export const getToken = (cookies?: any) => {
-  let cookie = getCookie(process.env.NEXT_PUBLIC_JWT_NAME || "");
-  if(cookies) cookie = cookies?.[process.env.NEXT_PUBLIC_JWT_SECRET || ""]
+  let cookie = getCookie(process.env.JWT_NAME || "");
+  if (cookies) cookie = cookies?.[process.env.JWT_SECRET || ""];
 
   try {
     return JSON.parse(cookie?.toString() || "");
@@ -40,9 +40,9 @@ export const isLogin = () => {
 };
 
 export const setLogin = (body: AuthProps) => {
-  setCookies(process.env.NEXT_PUBLIC_JWT_NAME || "", JSON.stringify(body));
+  setCookies(process.env.JWT_NAME || "", JSON.stringify(body));
 };
 
 export const logout = () => {
-  removeCookies(process.env.NEXT_PUBLIC_JWT_NAME || "");
+  removeCookies(process.env.JWT_NAME || "");
 };

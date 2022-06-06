@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PropsDataRes, resError } from "../../../utils/response";
 import db from "../../../libs/db";
-import { createAccessToken, decodeToken } from "./helper";
+import { createAccessToken } from "./helper";
+import { decodeToken } from "../../../utils";
 
 export default function handler(
   req: NextApiRequest,
@@ -23,7 +24,7 @@ const postData = async (req: NextApiRequest, res: NextApiResponse) => {
   const { refresh_token } = req.body;
 
   try {
-    const payload: any = await decodeToken(refresh_token);
+    const payload: any = decodeToken(refresh_token);
     const refreshToken = await db("tb_refresh_token")
       .where("id", "=", payload.jid)
       .first();

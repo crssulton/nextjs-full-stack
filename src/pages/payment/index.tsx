@@ -1,27 +1,42 @@
 import cogoToast from "cogo-toast";
 import { useFormik } from "formik";
+import { GetServerSidePropsContext } from "next";
 import { useState } from "react";
 import { confirmAlert } from "react-confirm-alert";
 import { AlertConfirm, InputText, TablePaymentType } from "../../components";
-import { API } from "../../utils";
+import { API, getToken } from "../../utils";
 import { initialValues, validationSchema, formList } from "./helper";
 
 const limit = 5;
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async ({
+  req,
+}: GetServerSidePropsContext) => {
+  let { access_token } = getToken(req?.cookies);
+  if (!access_token) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/`,
+      },
+    };
+  }
+
   const res = await API({
     path: `/api/payments/types?limit=${limit}`,
     method: "GET",
+    access_token,
   });
 
   return {
-    props: { data: res?.result, count: res?.count },
+    props: { data: res?.result, count: res?.count, access_token },
   };
 };
 
 type Props = {
   data: any[];
   count: number;
+  access_token: string;
 };
 
 const Payment = (props: Props) => {
@@ -35,7 +50,11 @@ const Payment = (props: Props) => {
       const { id }: any = dataEdit;
       const method = id ? "PUT" : "POST";
       const body = { ...value, id };
-      const res = await API({ path: "/api/payments/types", method, body });
+      const res = await API({
+        path: "/api/payments/types",
+        method,
+        body,
+      });
 
       if (!res?.status) throw new Error(res?.message);
 

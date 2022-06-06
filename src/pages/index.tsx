@@ -1,16 +1,35 @@
-import type { NextPage } from 'next'
-import styles from '../styles/Home.module.css'
+import { GetServerSidePropsContext } from "next";
+import { API, decodeToken, getToken } from "../utils";
+import Home from "./home";
 
-const Home: NextPage = () => {
-  return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to NextJS
-        </h1>
-      </main>
-    </div>
-  )
-}
+export const getServerSideProps = async ({
+  req,
+}: GetServerSidePropsContext) => {
+  let { access_token } = getToken(req?.cookies);
+  let user: object = { name: "", email: "" };
 
-export default Home
+  if (access_token) {
+    const decode = decodeToken(access_token);
+    const res = await API({
+      path: `/api/users/${decode?.sub}`,
+      method: "GET",
+      access_token,
+    });
+    if (res?.status) user = res?.result as object;
+  }
+
+  return {
+    props: { access_token, user },
+  };
+};
+
+type Props = {
+  access_token: string;
+  user: object;
+};
+
+const index = (props: Props) => {
+  return <Home {...props} />;
+};
+
+export default index;

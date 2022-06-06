@@ -3,7 +3,7 @@ import type { NextApiResponse } from "next";
 type PropsDataRes = {
   result?: any[] | object;
   message?: string;
-  count?: number
+  count?: number;
 };
 
 type Props = {
@@ -17,7 +17,9 @@ const resSuccess = ({ res, data, statusCode = 200 }: Props) => {
 };
 
 const resError = ({ res, data, statusCode = 400 }: Props) => {
-  return res.status(statusCode).json({ ...data, status: false });
+  return res
+    .status(statusCode)
+    .json({ result: [], count: 0, ...data, status: false });
 };
 
 export { resSuccess, resError };

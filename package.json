@@ -16,6 +16,7 @@
     "antd": "^4.20.6",
     "bcrypt": "^5.0.1",
     "cogo-toast": "^4.2.3",
+    "cookies-next": "^2.0.4",
     "formik": "^2.2.9",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.0.0",

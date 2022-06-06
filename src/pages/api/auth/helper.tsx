@@ -1,14 +1,14 @@
 import db from "../../../libs/db";
-import jwt, { TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
-import { resError } from "../../../utils";
+import { decodeToken, resError } from "../../../utils";
 
 export const createAccessToken = async (user: any) => {
   const payload = {
     sub: user.id,
   };
 
-  return jwt.sign(payload, process.env.JWT_SECRET || "", {
+  return jwt.sign(payload, process.env.NEXT_PUBLIC_JWT_SECRET || "", {
     expiresIn: 60 * 60,
   });
 };
@@ -29,19 +29,7 @@ export const createRefreshToken = async (user: any) => {
     jid: jid[0],
   };
 
-  return jwt.sign(payload, process.env.JWT_SECRET || "", { expiresIn });
-};
-
-export const decodeToken = (token: string) => {
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET || "");
-  } catch (error) {
-    if (error instanceof TokenExpiredError) {
-      throw new Error("Refresh token is expired");
-    } else {
-      throw new Error("Failed to decode token");
-    }
-  }
+  return jwt.sign(payload, process.env.NEXT_PUBLIC_JWT_SECRET || "", { expiresIn });
 };
 
 export const verifyAuth = async (req: NextApiRequest, res: NextApiResponse) => {

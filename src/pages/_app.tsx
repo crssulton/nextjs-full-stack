@@ -25,7 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         ></link>
       </Head>
 
-      <Navigation />
+      <Navigation {...pageProps}/>
 
       <Component {...pageProps} />
 

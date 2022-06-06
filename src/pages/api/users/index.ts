@@ -1,15 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PropsDataRes, resError, resSuccess } from "../../../utils/response";
-// import data from "../../../../__mocks__/info-beasiswa";
 import db from "../../../libs/db";
+import * as bcrypt from "bcrypt";
+import { validateUser } from "./helper";
 import { verifyAuth } from "../auth/helper";
+// import { TokenExpiredError } from 'jsonwebtoken';
 
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<PropsDataRes>
 ) {
   verifyAuth(req, res)
-
+  
   const { method } = req;
 
   switch (method) {
@@ -19,11 +21,8 @@ export default function handler(
     case "POST":
       postData(req, res);
       break;
-    case "PUT":
-      putData(req, res);
-      break;
     default:
-      res.setHeader("Allow", ["GET", "POST", "PUT"]);
+      res.setHeader("Allow", ["GET", "POST"]);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
@@ -35,12 +34,12 @@ const getData = async (
   try {
     const { limit = 10, offset = 0 } = req.query;
 
-    const result = await db("tb_ielts_material")
+    const result = await db("tb_users")
       .select()
       .limit(Number(limit))
       .offset(Number(offset));
 
-    const count = await db("tb_ielts_material").count("id as count");
+    const count = await db("tb_users").count("id as count");
 
     return resSuccess({ res, data: { result, count: count?.[0]?.count } });
   } catch (error) {
@@ -56,8 +55,19 @@ const postData = async (
   const body = req.body;
 
   try {
-    const id = await db("tb_ielts_material").insert(body);
-    const result = await db("tb_ielts_material").where("id", "=", id).first();
+    const salt = await bcrypt.genSalt();
+    const password = await bcrypt.hash(body.password, salt);
+
+    const checkUser = await validateUser(body);
+    if (!checkUser) {
+      await db("tb_users").insert({
+        ...body,
+        salt,
+        password,
+      });
+    }
+
+    const result = await db("tb_users").where("email", "=", body.email).first();
 
     return resSuccess({
       res,
@@ -66,22 +76,5 @@ const postData = async (
   } catch (error) {
     console.log("error", error);
     resError({ res, data: { message: "Create data error!" } });
-  }
-};
-
-const putData = async (
-  req: NextApiRequest,
-  res: NextApiResponse<PropsDataRes>
-) => {
-  const { id, ...body } = req.body;
-
-  try {
-    await db("tb_ielts_material").where("id", "=", id).update(body);
-    const result = await db("tb_ielts_material").where("id", "=", id).first();
-
-    return resSuccess({ res, data: { message: "Edit data success!", result } });
-  } catch (error) {
-    console.log("error", error);
-    resError({ res, data: { message: "Edit data error!" } });
   }
 };

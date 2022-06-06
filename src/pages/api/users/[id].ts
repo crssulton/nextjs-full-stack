@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PropsDataRes, resError, resSuccess } from "../../../../utils/response";
-// import data from "../../../../../__mocks__/payment-type";
-import db from "../../../../libs/db";
-import { verifyAuth } from "../../auth/helper";
+import { PropsDataRes, resError, resSuccess } from "../../../utils/response";
+// import data from "../../../../__mocks__/info-beasiswa";
+import db from "../../../libs/db";
+import { verifyAuth } from "../auth/helper";
 
 export default function handler(
   req: NextApiRequest,
@@ -32,12 +32,12 @@ const getData = async (
   const { id } = req.query;
 
   try {
-    const result = await db("tb_payments_type").where("id", "=", id).first();
+    const result = await db("tb_users").where("id", "=", id).first();
 
     if (!result) {
       return resError({
         res,
-        data: { message: "Data not found!", result: {} },
+        data: { message: "Data not found!" },
         statusCode: 404,
       });
     }
@@ -48,7 +48,7 @@ const getData = async (
     });
   } catch (error) {
     console.log("error", error);
-    resError({ res, data: { message: "Get data error!", result: {} } });
+    resError({ res, data: { message: "Get data error!" } });
   }
 };
 
@@ -59,7 +59,7 @@ const deleteData = async (
   const { id } = req.query;
 
   try {
-    await db("tb_payments_type").where("id", "=", id).del();
+    await db("tb_users").where("id", "=", id).del();
 
     return resSuccess({ res, data: { message: "Delete data success!" } });
   } catch (error) {

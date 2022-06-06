@@ -2,11 +2,14 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PropsDataRes, resError, resSuccess } from "../../../utils/response";
 // import data from "../../../../__mocks__/payment-type";
 import db from "../../../libs/db";
+import { verifyAuth } from "../auth/helper";
 
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<PropsDataRes>
 ) {
+  verifyAuth(req, res)
+
   const { method } = req;
 
   switch (method) {
